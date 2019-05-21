@@ -1,0 +1,12 @@
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+
+# Misc
+.DS_Store
+.vscode
+.env
+package-lock.json
