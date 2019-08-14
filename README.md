@@ -67,7 +67,10 @@ via the Lambda *Configuration* screen for your function. For Kubernetes and
 OpenShift this is done via the `cronjob.yml`, and can be changed afterwards
 using `kubectl edit cronjobs/$JOB_ID`.
 
-* TIME_PERIOD - This should be the time between invocations. For example, if you invoke the function every hour, set this to "1 hour". It defaults to "24 hours" to match the default crontab of `0 0 * * ? *`.
+* TIME_PERIOD - This should be the time between invocations. For example, if
+you invoke the function every hour, set this to "1 hour". It defaults to
+"24 hours" to match the default crontab of `0 0 * * * ` in Kubernetes and
+`0 0 * * ? *` in AWS.
 * FILE_URL - The file to watch. For example [my env-var file](https://github.com/evanshortiss/env-var/blob/master/env-var.js).
 * SENDGRID_API_KEY - Your API key for SendGrid.
 * SENDGRID_SENDER - The email that should be displayed as the sender.
