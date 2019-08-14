@@ -3,6 +3,7 @@
 const http = require('got')
 const mailer = require('@sendgrid/mail')
 const env = require('env-var')
+const log = require('barelog')
 const timestring = require('timestring')
 
 const SENDGRID_API_KEY = env.get('SENDGRID_API_KEY').asString()
@@ -22,7 +23,7 @@ const INVOCATION_TIME = new Date()
  * defined in SENDGRID_RECIPIENT or SENDGRID_RECIPIENTS
  */
 module.exports.checkForNewCommits = async (event) => {
-  log(`Checking for changes in file: ${FILE_URL}`)
+  log(`Checking for changes in file: ${FILE_URL.toString()}`)
 
   const { ownerAndRepo, filepath } = getRepoAndFileDetails()
   const response = await http.get(getResolvedApiUrl(), {
@@ -72,6 +73,7 @@ module.exports.checkForNewCommits = async (event) => {
 
       return { message: 'Commits detected, and email sent!', event }
     } else {
+      log('No new commits detected')
       await sendEmail(
         'No Commits Detected',
         `Nothing to report today for ${filepath} in ${ownerAndRepo}.`
@@ -103,9 +105,11 @@ function commitTimeFilter (commit) {
   const commitDate = new Date(commit.commit.author.date)
   const timeDifference = INVOCATION_TIME.getTime() - commitDate.getTime()
 
-  log(`Commit ${commit.sha.substring(0, 7)} time was ${commitDate.toJSON()}, current time is ${INVOCATION_TIME.toJSON()}`)
+  const isNewCommit = timeDifference < TIME_PERIOD
 
-  return timeDifference < TIME_PERIOD
+  log(`Commit ${commit.sha.substring(0, 7)} time was ${commitDate.toJSON()}, current time is ${INVOCATION_TIME.toJSON()}. Is this a new commit? ${isNewCommit}`)
+
+  return isNewCommit
 }
 
 function sendEmail (subject, text, html) {
@@ -137,12 +141,4 @@ function sendEmail (subject, text, html) {
 
 function getEmailRecipients () {
   return SENDGRID_RECIPIENT || SENDGRID_RECIPIENTS.map(email => { return { email } })
-}
-
-function log () {
-  const args = Array.prototype.slice.call(arguments)
-
-  args.unshift(new Date().toJSON())
-
-  console.log.apply(console, args)
 }

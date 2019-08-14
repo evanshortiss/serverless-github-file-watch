@@ -1,15 +1,18 @@
 {
-  "name": "serverless-github-file-watch",
+  "name": "stateless-github-file-watch",
   "version": "1.0.0",
-  "description": "A serverless function that will notify configured recipients of a file change in a GitHub repository.",
+  "description": "A stateless/serverless function that will notify configured recipients of a file change in a GitHub repository.",
   "main": "handler.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "serverless deploy -v",
     "update": "serverless deploy function -f checkForNewCommits -v",
-    "format": "standard handler.js --fix",
+    "format": "standard k8s.js handler.js --fix",
     "invoke": "serverless invoke -f checkForNewCommits",
-    "logs": "serverless logs -f checkForNewCommits -t"
+    "logs": "serverless logs -f checkForNewCommits -t",
+    "container:build": "docker build . -t stateless-github-file-watch",
+    "container:tag": "docker tag stateless-github-file-watch quay.io/$IMAGE_USER/stateless-github-file-watch:$npm_package_version",
+    "start": "node k8s.js"
   },
   "author": "Evan Shortiss",
   "husky": {
@@ -25,8 +28,17 @@
   },
   "dependencies": {
     "@sendgrid/mail": "~6.4.0",
+    "barelog": "~0.1.0",
     "env-var": "~4.0.0",
     "got": "~9.6.0",
     "timestring": "~6.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/evanshortiss/serverless-github-file-watch.git"
+  },
+  "bugs": {
+    "url": "https://github.com/evanshortiss/serverless-github-file-watch/issues"
+  },
+  "homepage": "https://github.com/evanshortiss/serverless-github-file-watch#readme"
 }

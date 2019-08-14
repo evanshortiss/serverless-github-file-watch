@@ -1,0 +1,19 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: stateless-github-file-watch
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: stateless-github-file-watch
+            image: quay.io/evanshortiss/stateless-github-file-watch:latest
+            env:
+            - name: TIME_PERIOD
+              value: "24 hours"
+            - name: FILE_URL
+              value: "https://github.com/evanshortiss/env-var/blob/master/env-var.js"
+          restartPolicy: OnFailure
